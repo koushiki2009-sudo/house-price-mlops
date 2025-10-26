@@ -1,0 +1,20 @@
+{
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Request Count (total)",
+      "targets": [
+        {"expr": "request_count_total"}
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Avg Request Time (s)",
+      "targets": [
+        {"expr": "request_processing_seconds_sum / request_processing_seconds_count"}
+      ]
+    }
+  ],
+  "title": "House Model Dashboard"
+}
