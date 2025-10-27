@@ -1,4 +1,4 @@
-name: Build and publish to GHCR
+name: Build and publish Docker image to GHCR
 
 on:
   push:
@@ -24,19 +24,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GHCR
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      # 🧩 This step now shows full logs and disables BuildKit compression
+      - name: Build and push Docker image (show full logs)
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: true
           file: Dockerfile
+          push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/house-price-mlops:latest
             ghcr.io/${{ github.repository_owner }}/house-price-mlops:${{ github.sha }}
+          progress: plain
+        env:
+          DOCKER_BUILDKIT: 0
