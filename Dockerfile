@@ -58,3 +58,5 @@ ENV PORT=8080
 
 # Adjust entrypoint if needed (FastAPI/uvicorn/gunicorn example)
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app:app", "-b", "0.0.0.0:8080", "-w", "1"]
+
+
