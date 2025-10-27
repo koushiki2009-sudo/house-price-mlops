@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: house-model-deployment
+  name: house-price-ml
   labels:
-    app: house-model
+    app: house-price-ml
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: house-model
+      app: house-price-ml
   template:
     metadata:
       labels:
-        app: house-model
+        app: house-price-ml
     spec:
       containers:
-        - name: house-model
-          # 👇 Replace this image with your Docker Hub image name
-          image: <your-dockerhub-username>/house-model:latest
+        - name: house-price-ml
+          image: ghcr.io/koushiki2009-sudo/house-price-mlops:latest   # ✅ Your GHCR image
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -30,16 +29,19 @@ spec:
               memory: "512Mi"
           readinessProbe:
             httpGet:
-              path: /readyz
+              path: /health
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 15
           env:
             - name: MODEL_PATH
-              value: "model.joblib"
+              value: "/app/model.joblib"
+      # ✅ Include this if GHCR is private
+      imagePullSecrets:
+        - name: regcred-ghcr
