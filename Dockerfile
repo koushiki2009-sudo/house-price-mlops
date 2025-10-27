@@ -1,37 +1,36 @@
-# ===============================
-# Dockerfile for house-price-mlops
-# ===============================
-
-# Use a lightweight Python image
+# Dockerfile - broader system libs to fix most pip compile errors
 FROM python:3.10-slim-bullseye
 
-# Prevents Python from buffering stdout/stderr
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Set working directory
 WORKDIR /app
 
-# -------------------------------------
-# Install essential system dependencies
-# -------------------------------------
-# (Add more later if a package requires it)
+# Install common build dependencies and scientific libs
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     g++ \
+    gfortran \
     curl \
     ca-certificates \
+    pkg-config \
+    libssl-dev \
+    libffi-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libpq-dev \
+    libatlas-base-dev \
+    libopenblas-dev \
+    liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# -------------------------------------
-# Copy requirements file and install deps
-# -------------------------------------
+# Copy requirements and install each package one-by-one (keeps logs clear)
 COPY requirements.txt /app/requirements.txt
 
-# Upgrade pip, then install each package individually to show which fails
 RUN python -m pip install --upgrade pip setuptools wheel && \
-    echo "=== Installing requirements one by one ===" && \
     python - <<'PY'
 import sys, subprocess
 reqs = open('/app/requirements.txt').read().splitlines()
@@ -47,18 +46,11 @@ for r in reqs:
 print("✅ All packages installed successfully!", flush=True)
 PY
 
-# -------------------------------------
-# Copy the rest of your project files
-# -------------------------------------
+# Copy rest of project
 COPY . /app
 
-# Expose port (FastAPI / Flask default)
 EXPOSE 8080
 ENV PORT=8080
 
-# -------------------------------------
-# Start the app
-# -------------------------------------
-# Change this line if your app file or variable name is different.
-# Example: If your main file is `app.py` and FastAPI instance is `app`
+# Adjust entrypoint if needed (FastAPI/uvicorn/gunicorn example)
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app:app", "-b", "0.0.0.0:8080", "-w", "1"]
