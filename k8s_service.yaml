@@ -1,15 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: house-model-service
-  labels:
-    app: house-model
+  name: house-price-ml-service
 spec:
   selector:
-    app: house-model
-  type: NodePort
+    app: house-price-ml
   ports:
-    - name: http
-      port: 80
-      targetPort: 8080
-      nodePort: 30080
+    - protocol: TCP
+      port: 80          # external port
+      targetPort: 8080  # container port
+  type: LoadBalancer    # Use NodePort if you’re running Minikube
