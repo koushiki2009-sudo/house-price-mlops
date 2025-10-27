@@ -1,0 +1,28 @@
+name: Test Docker Hub Access
+
+on:
+  workflow_dispatch:  # allows you to run manually from the Actions tab
+
+jobs:
+  docker-access-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Verify Docker login
+        run: |
+          echo "🔍 Checking Docker authentication status..."
+          docker info | grep -i "Username" || echo "❌ Not logged in"
+
+      - name: Pull test image
+        run: |
+          echo "⬇️ Pulling hello-world image from Docker Hub..."
+          docker pull hello-world && echo "✅ Pull succeeded!" || echo "❌ Pull failed."
