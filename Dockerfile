@@ -49,6 +49,10 @@ PY
 # Copy rest of project
 COPY . /app
 
+# DEBUG: list files so build logs show whether model is present
+RUN echo "===== /app listing =====" && ls -la /app || true && \
+    echo "===== /app/models listing =====" && ls -la /app/models || true
+
 EXPOSE 8080
 ENV PORT=8080
 
